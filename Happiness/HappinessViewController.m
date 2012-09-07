@@ -26,4 +26,9 @@
     [self.faceView setNeedsDisplay]; // anytime `happiness` gets set, redraw the view
 }
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+    return YES;
+}
+
 @end
