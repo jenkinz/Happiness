@@ -31,13 +31,18 @@
 }
 
 #define DEFAULT_SCALE 0.90
+#define EYE_H 0.35 // the eye constants are in percentages of the size of the face
+#define EYE_V 0.35
+#define EYE_RADIUS 0.10
 
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect
 {
     // Drawing code
-    CGContextRef context = UIGraphicsGetCurrentContext(); // always get current context at the beginning of drawRect - we need this context for any of the core graphics methods
+    CGContextRef context = UIGraphicsGetCurrentContext(); // always get current context at the beginning of drawRect - we need this context for any of the core graphics functions
+    
+    // draw face (circle)
     
     CGPoint midPoint;
     midPoint.x = self.bounds.origin.x + self.bounds.size.width/2;
@@ -57,10 +62,20 @@
     
     [self drawCircleAtPoint:midPoint withRadius:size inContext:context];
     
-    // draw face (circle)
     // draw eyes (2 circles)
+    
+    CGPoint eyePoint;
+    eyePoint.x = midPoint.x - size * EYE_H;
+    eyePoint.y = midPoint.y - size * EYE_V;
+    
+    [self drawCircleAtPoint:eyePoint withRadius:size * EYE_RADIUS inContext:context];
+    eyePoint.x += size * EYE_H * 2;
+    [self drawCircleAtPoint:eyePoint withRadius:size * EYE_RADIUS inContext:context];
+    
     // no nose
     // draw mouth
+    
+    
 }
 
 @end
