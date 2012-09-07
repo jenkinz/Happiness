@@ -30,10 +30,15 @@
     UIGraphicsPopContext(); // in subroutines, always pop the context when done with it
 }
 
-#define DEFAULT_SCALE 0.90
-#define EYE_H 0.35 // the eye constants are in percentages of the size of the face
+#define DEFAULT_SCALE 0.90 // the scale factor for the circle face
+
+#define EYE_H 0.35 // the following constants are in percentages of the size of the face
 #define EYE_V 0.35
 #define EYE_RADIUS 0.10
+#define MOUTH_H 0.45
+#define MOUTH_V 0.40
+
+#define MOUTH_SMILE 0.25 // curve
 
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
@@ -75,7 +80,26 @@
     // no nose
     // draw mouth
     
+    CGPoint mouthStart;
+    mouthStart.x = midPoint.x - MOUTH_H * size;
+    mouthStart.y = midPoint.y + MOUTH_V * size;
+    CGPoint mouthEnd = mouthStart;
+    mouthEnd.x += MOUTH_H * size * 2;
+    CGPoint mouthCP1 = mouthStart; // control point 1
+    mouthCP1.x += MOUTH_H * size * 2/3;
+    CGPoint mouthCP2 = mouthEnd; // control point 2
+    mouthCP2.x -= MOUTH_H * size * 2/3;
     
+    float smile = 1.0; // moves control points up or down (0 in the middle; 1.0 full smile; -1.0 full frown)
+    
+    CGFloat smileOffset = MOUTH_SMILE * size * smile;
+    mouthCP1.y += smileOffset;
+    mouthCP2.y += smileOffset;
+    
+    CGContextBeginPath(context);
+    CGContextMoveToPoint(context, mouthStart.x, mouthStart.y);
+    CGContextAddCurveToPoint(context, mouthCP1.x, mouthCP2.y, mouthCP2.x, mouthCP2.y, mouthEnd.x, mouthEnd.y);
+    CGContextStrokePath(context);
 }
 
 @end
