@@ -8,13 +8,62 @@
 
 #import "HappinessFaceView.h"
 
+#define DEFAULT_SCALE 0.90 // the scale factor for the circle face
+
+#define EYE_H 0.35 // the following constants are in percentages of the size of the face
+#define EYE_V 0.35
+#define EYE_RADIUS 0.10
+#define MOUTH_H 0.45
+#define MOUTH_V 0.40
+
+#define MOUTH_SMILE 0.25 // curve
+
 @implementation HappinessFaceView
+
+@synthesize scale = _scale;
+
+- (CGFloat)scale
+{
+    if (!_scale) { // scale of 0 means it hasn't been set yet; return the default
+        return DEFAULT_SCALE;
+    }
+    else {
+        return _scale;
+    }
+}
+
+- (void)setScale:(CGFloat)scale
+{
+    if (_scale != scale) {
+        _scale = scale;
+        [self setNeedsDisplay]; // causes a redraw - we want this whenever the scale changes
+    }
+}
+
+- (void)pinch:(UIPinchGestureRecognizer *)gesture
+{
+    if ((gesture.state == UIGestureRecognizerStateChanged) || (gesture.state == UIGestureRecognizerStateEnded)) {
+        self.scale *= gesture.scale;
+        gesture.scale = 1.0; // set so that we have an incremental (instead of a cumulative) scale
+    }
+}
+
+- (void)setup
+{
+    self.contentMode = UIViewContentModeRedraw; // redraw when bounds of frame changes (e.g. device rotation)
+}
+
+- (void)awakeFromNib
+{
+    [self setup];
+}
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
+        [self setup];
     }
     return self;
 }
@@ -29,16 +78,6 @@
     
     UIGraphicsPopContext(); // in subroutines, always pop the context when done with it
 }
-
-#define DEFAULT_SCALE 0.90 // the scale factor for the circle face
-
-#define EYE_H 0.35 // the following constants are in percentages of the size of the face
-#define EYE_V 0.35
-#define EYE_RADIUS 0.10
-#define MOUTH_H 0.45
-#define MOUTH_V 0.40
-
-#define MOUTH_SMILE 0.25 // curve
 
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
@@ -60,7 +99,7 @@
     else {
         size = self.bounds.size.width/2;
     }
-    size *= DEFAULT_SCALE; // scale it so it doesn't go right to the edges
+    size *= self.scale; // scale it based on the current scale (either default, or set by the pinch handler)
     
     CGContextSetLineWidth(context, 5.0);
     [[UIColor blueColor] setStroke];

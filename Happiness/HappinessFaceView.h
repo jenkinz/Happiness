@@ -10,4 +10,8 @@
 
 @interface HappinessFaceView : UIView
 
+@property (nonatomic) CGFloat scale; // how "zoomed in" we are on the face
+
+- (void)pinch:(UIPinchGestureRecognizer *)gesture;
+
 @end
