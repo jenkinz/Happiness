@@ -14,4 +14,6 @@
 
 @implementation HappinessViewController
 
+@synthesize happiness = _happiness;
+
 @end
